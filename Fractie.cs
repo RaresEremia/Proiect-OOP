@@ -2,12 +2,12 @@
 
 namespace Proiect_OOP
 {
-    public class Fraction<T> where T : struct
+    public class Fractie<T> where T : struct
     {
         public T Numarator { get; private set; }
         public T Numitor { get; private set; }
 
-        public Fraction(T numarator, T numitor)
+        public Fractie(T numarator, T numitor)
         {
             if (numitor.Equals(default(T)))
             {
@@ -47,33 +47,33 @@ namespace Proiect_OOP
             return a;
         }
 
-        public static Fraction<T> operator +(Fraction<T> a, Fraction<T> b)
+        public static Fractie<T> operator +(Fractie<T> a, Fractie<T> b)
         {
             T num = Adunare(Inmultire(a.Numarator, b.Numitor), Inmultire(b.Numarator, a.Numitor));
             T denom = Inmultire(a.Numitor, b.Numitor);
-            return new Fraction<T>(num, denom);
+            return new Fractie<T>(num, denom);
         }
 
-        public static Fraction<T> operator -(Fraction<T> a, Fraction<T> b)
+        public static Fractie<T> operator -(Fractie<T> a, Fractie<T> b)
         {
             T num = Scadere(Inmultire(a.Numarator, b.Numitor), Inmultire(b.Numarator, a.Numitor));
             T denom = Inmultire(a.Numitor, b.Numitor);
-            return new Fraction<T>(num, denom);
+            return new Fractie<T>(num, denom);
         }
 
-        public static Fraction<T> operator -(Fraction<T> a)
+        public static Fractie<T> operator -(Fractie<T> a)
         {
-            return new Fraction<T>(Negate(a.Numarator), a.Numitor);
+            return new Fractie<T>(Negate(a.Numarator), a.Numitor);
         }
 
-        public static Fraction<T> operator *(Fraction<T> a, Fraction<T> b)
+        public static Fractie<T> operator *(Fractie<T> a, Fractie<T> b)
         {
             T num = Inmultire(a.Numarator, b.Numarator);
             T denom = Inmultire(a.Numitor, b.Numitor);
-            return new Fraction<T>(num, denom);
+            return new Fractie<T>(num, denom);
         }
 
-        public static Fraction<T> operator /(Fraction<T> a, Fraction<T> b)
+        public static Fractie<T> operator /(Fractie<T> a, Fractie<T> b)
         {
             if (b.Numarator.Equals(default(T)))
             {
@@ -82,12 +82,12 @@ namespace Proiect_OOP
 
             T num = Inmultire(a.Numarator, b.Numitor);
             T denom = Inmultire(a.Numitor, b.Numarator);
-            return new Fraction<T>(num, denom);
+            return new Fractie<T>(num, denom);
         }
 
-        public static explicit operator Fraction<T>(T value)
+        public static explicit operator Fractie<T>(T value)
         {
-            return new Fraction<T>(value, (T)Convert.ChangeType(1, typeof(T)));
+            return new Fractie<T>(value, (T)Convert.ChangeType(1, typeof(T)));
         }
 
         public override string ToString()

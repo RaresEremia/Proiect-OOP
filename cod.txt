@@ -1,0 +1,263 @@
+using System;
+
+namespace Proiect_OOP
+{
+    public class Fractie<T> where T : struct
+    {
+        public T Numarator { get; private set; }
+        public T Numitor { get; private set; }
+
+        public Fractie(T numarator, T numitor)
+        {
+            if (numitor.Equals(default(T)))
+            {
+                throw new ArgumentException("Numitorul nu poate fi zero");
+            }
+
+            Numarator = numarator;
+            Numitor = numitor;
+            Simplify();
+        }
+
+        private void Simplify()
+        {
+            if (typeof(T) == typeof(GaussInt))
+            {
+                return;
+            }
+
+            T cmmdc = CelMaiMareDivizorComun(Numarator, Numitor);
+            Numarator = Impartire(Numarator, cmmdc);
+            Numitor = Impartire(Numitor, cmmdc);
+        }
+
+        private static T CelMaiMareDivizorComun(T a, T b)
+        {
+            if (typeof(T) == typeof(GaussInt))
+            {
+                throw new InvalidOperationException("CMMDC nu este suportat pe numere reale/GaussInt.");
+            }
+
+            while (!b.Equals(default(T)))
+            {
+                T temp = b;
+                b = Mod(a, b);
+                a = temp;
+            }
+            return a;
+        }
+
+        public static Fractie<T> operator +(Fractie<T> a, Fractie<T> b)
+        {
+            T num = Adunare(Inmultire(a.Numarator, b.Numitor), Inmultire(b.Numarator, a.Numitor));
+            T denom = Inmultire(a.Numitor, b.Numitor);
+            return new Fractie<T>(num, denom);
+        }
+
+        public static Fractie<T> operator -(Fractie<T> a, Fractie<T> b)
+        {
+            T num = Scadere(Inmultire(a.Numarator, b.Numitor), Inmultire(b.Numarator, a.Numitor));
+            T denom = Inmultire(a.Numitor, b.Numitor);
+            return new Fractie<T>(num, denom);
+        }
+
+        public static Fractie<T> operator -(Fractie<T> a)
+        {
+            return new Fractie<T>(Negate(a.Numarator), a.Numitor);
+        }
+
+        public static Fractie<T> operator *(Fractie<T> a, Fractie<T> b)
+        {
+            T num = Inmultire(a.Numarator, b.Numarator);
+            T denom = Inmultire(a.Numitor, b.Numitor);
+            return new Fractie<T>(num, denom);
+        }
+
+        public static Fractie<T> operator /(Fractie<T> a, Fractie<T> b)
+        {
+            if (b.Numarator.Equals(default(T)))
+            {
+                throw new DivideByZeroException();
+            }
+
+            T num = Inmultire(a.Numarator, b.Numitor);
+            T denom = Inmultire(a.Numitor, b.Numarator);
+            return new Fractie<T>(num, denom);
+        }
+
+        public static explicit operator Fractie<T>(T value)
+        {
+            return new Fractie<T>(value, (T)Convert.ChangeType(1, typeof(T)));
+        }
+
+        public override string ToString()
+        {
+            return $"{Numarator}/{Numitor}";
+        }
+
+        private static T Adunare(T a, T b)
+        {
+            if (typeof(T) == typeof(GaussInt))
+            {
+                return (T)(object)(((GaussInt)(object)a) + ((GaussInt)(object)b));
+            }
+            return (T)Convert.ChangeType(Convert.ToDouble(a) + Convert.ToDouble(b), typeof(T));
+        }
+
+        private static T Scadere(T a, T b)
+        {
+            if (typeof(T) == typeof(GaussInt))
+            {
+                return (T)(object)(((GaussInt)(object)a) - ((GaussInt)(object)b));
+            }
+            return (T)Convert.ChangeType(Convert.ToDouble(a) - Convert.ToDouble(b), typeof(T));
+        }
+
+        private static T Inmultire(T a, T b)
+        {
+            if (typeof(T) == typeof(GaussInt))
+            {
+                return (T)(object)(((GaussInt)(object)a) * ((GaussInt)(object)b));
+            }
+            return (T)Convert.ChangeType(Convert.ToDouble(a) * Convert.ToDouble(b), typeof(T));
+        }
+
+        private static T Impartire(T a, T b)
+        {
+            if (typeof(T) == typeof(GaussInt))
+            {
+                return (T)(object)(((GaussInt)(object)a) / ((GaussInt)(object)b));
+            }
+            return (T)Convert.ChangeType(Convert.ToDouble(a) / Convert.ToDouble(b), typeof(T));
+        }
+
+        private static T Mod(T a, T b)
+        {
+            if (typeof(T) == typeof(GaussInt))
+            {
+                throw new InvalidOperationException("Mod nu este suportat pe numere reale/GaussInt.");
+            }
+            return (T)Convert.ChangeType(Convert.ToDouble(a) % Convert.ToDouble(b), typeof(T));
+        }
+
+        private static T Negate(T a)
+        {
+            if (typeof(T) == typeof(GaussInt))
+            {
+                GaussInt ga = (GaussInt)(object)a;
+                return (T)(object)new GaussInt(-ga.Real, -ga.Imag);
+            }
+            return (T)Convert.ChangeType(-Convert.ToDouble(a), typeof(T));
+        }
+    }
+}
+using System;
+
+namespace Proiect_OOP
+{
+    public struct GaussInt 
+    {
+        public int Real { get; private set; }
+        public int Imag { get; private set; }
+
+        public GaussInt(int real, int imag)
+        {
+            Real = real;
+            Imag = imag;
+        }
+
+        public int CompareTo(GaussInt other)
+        {
+            if (Real == other.Real)
+            {
+                return Imag.CompareTo(other.Imag);
+            }
+            return Real.CompareTo(other.Real);
+        }
+
+        public bool Equals(GaussInt other)
+        {
+            return Real == other.Real && Imag == other.Imag;
+        }
+
+        public static GaussInt operator +(GaussInt a, GaussInt b)
+        {
+            return new GaussInt(a.Real + b.Real, a.Imag + b.Imag);
+        }
+
+        public static GaussInt operator -(GaussInt a, GaussInt b)
+        {
+            return new GaussInt(a.Real - b.Real, a.Imag - b.Imag);
+        }
+
+        public static GaussInt operator *(GaussInt a, GaussInt b)
+        {
+            return new GaussInt(a.Real * b.Real - a.Imag * b.Imag, a.Real * b.Imag + a.Imag * b.Real);
+        }
+
+        public static GaussInt operator /(GaussInt a, GaussInt b)
+        {
+            int denom = b.Real * b.Real + b.Imag * b.Imag;
+            int realPart = (a.Real * b.Real + a.Imag * b.Imag) / denom;
+            int imagPart = (a.Imag * b.Real - a.Real * b.Imag) / denom;
+            return new GaussInt(realPart, imagPart);
+        }
+
+        public override string ToString()
+        {
+            return $"{Real} + {Imag}i";
+        }
+    }
+}
+using Proiect_OOP;
+using System;
+
+
+class Program
+{
+    static void Main()
+    {
+        // Testare pentru Fractie<int>
+        Fractie<int> frac1 = new Fractie<int>(1, 2);
+        Fractie<int> frac2 = new Fractie<int>(3, 4);
+        Fractie<int> resultAdd = frac1 + frac2;
+        Fractie<int> resultSub = frac1 - frac2;
+        Fractie<int> resultNeg = -frac1;
+        Fractie<int> resultMul = frac1 * frac2;
+        Fractie<int> resultDiv = frac1 / frac2;
+        Fractie<int> resultExplicit = (Fractie<int>)5;
+
+        Console.WriteLine("Suma: " + resultAdd);
+        Console.WriteLine("Deferenta: " + resultSub);
+        Console.WriteLine("Negativ: " + resultNeg);
+        Console.WriteLine("Inmultire: " + resultMul);
+        Console.WriteLine("Impărtire: " + resultDiv);
+        Console.WriteLine("Conversie: " + resultExplicit + "\n");
+
+        // Testare pentru GaussInt
+        GaussInt g1 = new GaussInt(1, 1);
+        GaussInt g2 = new GaussInt(2, 3);
+        Fractie<GaussInt> gfrac1 = new Fractie<GaussInt>(g1, g2);
+        GaussInt g3 = new GaussInt(4, -1);
+        GaussInt g4 = new GaussInt(3, 2);
+        Fractie<GaussInt> gfrac2 = new Fractie<GaussInt>(g3, g4);
+        Fractie<GaussInt> gresultAdd = gfrac1 + gfrac2;
+        Fractie<GaussInt> gresultSub = gfrac1 - gfrac2;
+        Fractie<GaussInt> gresultNeg = -gfrac1;
+        Fractie<GaussInt> gresultMul = gfrac1 * gfrac2;
+        Fractie<GaussInt> gresultDiv = gfrac1 / gfrac2;
+
+        Console.WriteLine("Gauss Int Adunare: " + gresultAdd);
+        Console.WriteLine("Gauss Int Scadere: " + gresultSub);
+        Console.WriteLine("Gauss Int Negare: " + gresultNeg);
+        Console.WriteLine("Gauss Int Înmultire: " + gresultMul);
+        Console.WriteLine("Gauss Int Împărtire: " + gresultDiv + "\n");
+
+
+        Console.WriteLine("Equals: " + g1.Equals(g2));
+        Console.WriteLine("CompareTo: " + g1.CompareTo(g2));
+        Console.WriteLine("ToString: " + g1.ToString());
+
+        Console.ReadKey();
+    }
+}

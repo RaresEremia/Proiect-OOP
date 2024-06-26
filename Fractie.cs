@@ -18,7 +18,35 @@ namespace Proiect_OOP
             Numitor = numitor;
             Simplify();
         }
+        public Fractie()
+        {
+            Numarator = default(T);
+            Numitor = (T)Convert.ChangeType(1, typeof(T)); 
+        }
+        public Fractie(Fractie<T> other)
+        {
+            Numarator = other.Numarator;
+            Numitor = other.Numitor;
+        }
+        ~Fractie()
+        {
 
+        }
+        public void ReadFromConsole()
+        {
+            Console.Write("Enter numarator: ");
+            Numarator = (T)Convert.ChangeType(Console.ReadLine(), typeof(T));
+
+            Console.Write("Enter numitor: ");
+            Numitor = (T)Convert.ChangeType(Console.ReadLine(), typeof(T));
+
+            if (Numitor.Equals(default(T)))
+            {
+                throw new ArgumentException("Numitor nu poate fi  zero");
+            }
+
+            Simplify();
+        }
         private void Simplify()
         {
             if (typeof(T) == typeof(GaussInt))

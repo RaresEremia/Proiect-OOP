@@ -13,6 +13,19 @@ namespace Proiect_OOP
             Imag = imag;
         }
 
+        public GaussInt(GaussInt other)
+        {
+            Real = other.Real;
+            Imag = other.Imag;
+        }
+        public void ReadFromConsole()
+        {
+            Console.Write("Enter real part: ");
+            Real = int.Parse(Console.ReadLine());
+
+            Console.Write("Enter imaginary part: ");
+            Imag = int.Parse(Console.ReadLine());
+        }
         public int CompareTo(GaussInt other)
         {
             if (Real == other.Real)
